@@ -4,6 +4,7 @@ from random import randint
 import simple_draw as sd
 
 sd.set_screen_size(1500, 750)
+sd.background_color = sd.COLOR_BLACK
 
 N = 20
 red = sd.COLOR_RED
@@ -15,7 +16,8 @@ blue = sd.COLOR_BLUE
 purple = sd.COLOR_PURPLE
 color_list = [red, orange, yellow, green, cyan, blue, purple]
 flakes_list = []
-fallen_flakes_count = []
+fallen_flakes_list_to_delete = []
+lying_snowflakes = []
 
 
 # Шаг 1: Реализовать падение снежинки через класс. Внести в методы:
@@ -82,9 +84,11 @@ def get_alot_of_flakes():
 
 
 def get_fallen_flakes():
+    counter = 0
     if flake.coord_y < 80:
-        fallen_flakes_count.append(flake)
-    return fallen_flakes_count
+        counter += 1
+        fallen_flakes_list_to_delete.append(flake)
+    return counter
 
 
 def append_flakes(count):
@@ -94,21 +98,25 @@ def append_flakes(count):
     return flakes_list
 
 
-
 # шаг 2: создать снегопад - список объектов Снежинка в отдельном списке, обработку примерно так:
 flakes = get_alot_of_flakes()  # создать список снежинок
 while True:
-
     for flake in flakes:
         flake.clear_previous_picture()
         flake.move()
         flake.draw()
         fallen_flakes = get_fallen_flakes()  # подcчитать сколько снежинок уже упало
-        fallen_flakes_count.clear()
         if fallen_flakes:
+            for fallen_flake in fallen_flakes_list_to_delete:
+                lying_snowflakes.append(fallen_flake)
+                flakes_list.remove(fallen_flake)
+            fallen_flakes_list_to_delete.clear()
             append_flakes(count=fallen_flakes)  # добавить еще сверху
-    sd.sleep(0.01)
+    for lying_snowflake in lying_snowflakes:
+        lying_snowflake.draw()
+        if len(lying_snowflakes) > 20:
+            lying_snowflakes.pop(0)
+    # sd.sleep(0.1)
     if sd.user_want_exit():
         break
-
 sd.pause()
