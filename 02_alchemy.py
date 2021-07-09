@@ -98,6 +98,7 @@ class Lightning:
                 result = Lightning()
                 return result
 
+
 class Dust:
     def __str__(self):
         return 'Пыль'
@@ -126,55 +127,101 @@ class Lava:
                 return result
 
 
+class Swamp:
+    def __str__(self):
+        return 'Болото'
+
+    def __add__(self, other):
+        return Reaction(elem_1=self, elem_2=other)
+
+    def is_right_reaction(element_1, element_2):
+        if str(element_1) == str(Water()) or str(element_2) == str(Water()):
+            if str(element_1) == str(Dirt()) or str(element_2) == str(Dirt()):
+                result = Swamp()
+                return result
+
+
+class Silt:
+    def __str__(self):
+        return 'Ил'
+
+    def __add__(self, other):
+        return Reaction(elem_1=self, elem_2=other)
+
+    def is_right_reaction(element_1, element_2):
+        if str(element_1) == str(Swamp()) or str(element_2) == str(Swamp()):
+            if str(element_1) == str(Fire()) or str(element_2) == str(Fire()):
+                result = Silt()
+                return result
+
+
+class Peat:
+    def __str__(self):
+        return 'Торф'
+
+    def __add__(self, other):
+        return Reaction(elem_1=self, elem_2=other)
+
+    def is_right_reaction(element_1, element_2):
+        if str(element_1) == str(Silt()) or str(element_2) == str(Silt()):
+            if str(element_1) == str(Fire()) or str(element_2) == str(Fire()):
+                result = Peat()
+                return result
+
+
+all_elements_list = [
+    Storm,
+    Steam,
+    Swamp,
+    Silt,
+    Lava,
+    Lightning,
+    Peat,
+    Dust,
+    Dirt
+]
+
+
 class Reaction:
     def __init__(self, elem_1, elem_2):
         self.elem_1 = elem_1
         self.elem_2 = elem_2
         self.result = self.which_reaction_is_there(self.elem_1, self.elem_2)
 
-
     def which_reaction_is_there(self, elem_1, elem_2):
-        result = Storm.is_right_reaction(elem_1, elem_2)
-        if result:
-            return result
-        result = Steam.is_right_reaction(elem_1, elem_2)
-        if result:
-            return result
-        result = Dirt.is_right_reaction(elem_1, elem_2)
-        if result:
-            return result
-        result = Lightning.is_right_reaction(elem_1, elem_2)
-        if result:
-            return result
-        result = Dust.is_right_reaction(elem_1, elem_2)
-        if result:
-            return result
-        result = Lava.is_right_reaction(elem_1, elem_2)
-        if result:
-            return result
+        list_of_results = []
+        for element in all_elements_list:
+            result = element.is_right_reaction(elem_1, elem_2)
+            if result:
+                list_of_results.append(result)
+        if len(list_of_results) != 0:
+            return list_of_results[0]
+        else:
+            return None
 
     def __str__(self):
         return 'В результате реакции элементов: (' + str(self.elem_1) + ' + ' + str(self.elem_2) + ') образуется ' \
                + str(self.result)
-    # Сложение элементов реализовывать через __add__
 
 
+# Сложение элементов реализовывать через __add__
 
 # Если результат не определен - то возвращать None
 # Вывод элемента на консоль реализовывать через __str__
-#
+
 # Примеры преобразований:
 #   print(Water(), '+', Air(), '=', Water() + Air())
 #   print(Fire(), '+', Air(), '=', Fire() + Air())
 
-# TODO здесь ваш код
 print(Water() + Air())
 print(Fire() + Water())
 print(Ground() + Water())
 print(Fire() + Air())
 print(Fire() + Ground())
 print(Ground() + Air())
-
+print(Dirt() + Water())
+print(Swamp() + Fire())
+print(Silt() + Fire())
 
 # Усложненное задание (делать по желанию)
 # Добавить еще элемент в игру.
