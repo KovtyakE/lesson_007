@@ -189,15 +189,11 @@ class Reaction:
         self.result = self.which_reaction_is_there(self.elem_1, self.elem_2)
 
     def which_reaction_is_there(self, elem_1, elem_2):
-        list_of_results = []
         for element in all_elements_list:
             result = element.is_right_reaction(elem_1, elem_2)
             if result:
-                list_of_results.append(result)
-        if len(list_of_results) != 0:
-            return list_of_results[0]
-        else:
-            return None
+                return result
+        return None
 
     def __str__(self):
         return 'В результате реакции элементов: (' + str(self.elem_1) + ' + ' + str(self.elem_2) + ') образуется ' \
