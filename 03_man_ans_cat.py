@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 
 from random import randint
+from termcolor import cprint
+
 
 # Доработать практическую часть урока lesson_007/python_snippets/08_practice.py
 
@@ -11,7 +13,7 @@ from random import randint
 
 # Доработать класс человека, добавив методы
 #   подобрать кота - у кота появляется дом.
-#   купить коту еды - кошачья еда в доме увеличивается на 50, деньги уменьшаются на 50.
+#   купить коту еды - кошачья еда в доме увеличивается на 50, деньги уменьшаются на 70.
 #   убраться в доме - степень грязи в доме уменьшается на 100, сытость у человека уменьшается на 20.
 # Увеличить кол-во зарабатываемых человеком денег до 150 (он выучил пайтон и устроился на хорошую работу :)
 
@@ -25,7 +27,136 @@ from random import randint
 
 # Человеку и коту надо вместе прожить 365 дней.
 
-# TODO здесь ваш код
+
+class Man:
+    def __init__(self, name):
+        self.name = name
+        self.fullness = 50
+        self.house = None
+
+    def __str__(self):
+        return '{}: сытость: {}'.format(self.name, self.fullness)
+
+    def eat(self):
+        if self.house.food >= 10:
+            cprint('{} поел'.format(self.name), color='yellow')
+            self.fullness += 10
+            self.house.food -= 10
+        else:
+            cprint('{}: нет еды'.format(self.name), color='red')
+
+    def work(self):
+        cprint('{} сходил на работу'.format(self.name), color='blue')
+        self.house.money += 150
+        self.fullness -= 10
+
+    def play_PC(self):
+        cprint('{} играл за компом целый день'.format(self.name), color='green')
+        self.fullness -= 10
+
+    def shopping(self):
+        if self.house.money >= 50:
+            cprint('{} сходил в магазин за едой'.format(self.name), color='magenta')
+            self.house.money -= 50
+            self.house.food += 50
+        else:
+            cprint('{}: на еду нет денег!'.format(self.name), color='red')
+
+    def bring_cat_to_home(self, cat, house):
+        self.cat = cat
+        self.cat.house = house
+        self.cat.fullness -= 10
+        cprint('{} приютил котика по кличке {}'.format(self.name, self.cat.name), color='cyan')
+
+    def cat_food_shopping(self):
+        if self.house.money >= 70:
+            cprint('{} сходил в магазин за едой для кошек'.format(self.name), color='magenta')
+            self.house.money -= 70
+            self.house.cat_food += 50
+        else:
+            cprint('{}: на еду для кошек денег не хватает!'.format(self.name), color='red')
+
+    def clean_house(self):
+        if self.house.dirty >= 100:
+            if self.fullness >= 30:
+                cprint('{} убрался в доме и переклеил обои'.format(self.name), color='green')
+                self.house.dirty -= 100
+                self.fullness -= 20
+
+    def go_to_the_house(self, house):
+        self.house = house
+        self.fullness -= 10
+        cprint('{} Вьехал в дом'.format(self.name), color='cyan')
+
+    def act(self):
+        if self.fullness <= 0:
+            cprint('{} умер...'.format(self.name), color='red')
+            return
+        dice = randint(1, 6)
+        if self.fullness < 20:
+            self.eat()
+        elif self.house.food < 10:
+            self.shopping()
+        elif self.house.money < 70:
+            self.work()
+        elif self.house.cat_food < 10:
+            self.cat_food_shopping()
+        elif dice == 1 or dice == 3:
+            self.work()
+        elif dice == 2 or dice == 4:
+            self.eat()
+        else:
+            self.play_PC()
+
+#TODO
+# Кот может есть, спать и драть обои - необходимо реализовать соответствующие методы.
+# Когда кот спит - сытость уменьшается на 10
+# Когда кот ест - сытость увеличивается на 20, кошачья еда в доме уменьшается на 10.
+# Когда кот дерет обои - сытость уменьшается на 10, степень грязи в доме увеличивается на 5
+# Если степень сытости < 0, кот умирает.
+# Так же надо реализовать метод "действуй" для кота, в котором он принимает решение
+# что будет делать сегодня
+class Cat:
+    def __init__(self, name):
+        self.name = name
+        self.fullness = 50
+        self.house = None
+
+    def __str__(self):
+        return 'Кот {}: сытость: {}'.format(self.name, self.fullness)
+
+
+class House:
+
+    def __init__(self):
+        self.food = 50
+        self.cat_food = 0
+        self.money = 0
+        self.dirty = 0
+
+    def __str__(self):
+        return 'Состояние дома: \nЕда: {} \nДеньги: {} \nКошачий корм: {} \nБеспорядок: {}'.format(
+            self.food, self.money, self.cat_food, self.dirty)
+
+
+citizens = [Man(name='Василий')]
+cats = [Cat(name='Васька')]
+
+my_sweet_home = House()
+for citizen in citizens:
+    citizen.go_to_the_house(house=my_sweet_home)
+for cat in cats:
+    citizens[0].bring_cat_to_home(cat=cat, house=my_sweet_home)
+
+for day in range(1, 115):
+    print('================ день {} =================='.format(day))
+    for citizen in citizens:
+        citizen.act()
+    print('--- в конце дня ---')
+    for citizen in citizens:
+        print(citizen)
+    print(my_sweet_home)
+    # input('Нажмите Enter для продолжения')
 
 # Усложненное задание (делать по желанию)
 # Создать несколько (2-3) котов и подселить их в дом к человеку.
